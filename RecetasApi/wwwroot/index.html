@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Recetario · Gestión de recetas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="css/site.css" rel="stylesheet" />
+</head>
+<body>
+
+    <!-- ===================== ACCESO (login / registro) ===================== -->
+    <section id="vistaAcceso" class="acceso d-none">
+        <div class="acceso-card shadow-lg">
+            <div class="acceso-marca">
+                <i class="bi bi-journal-richtext"></i>
+                <h1>Recetario</h1>
+                <p>Sistema de gestión de recetas, ingredientes y pasos de preparación</p>
+            </div>
+
+            <ul class="nav nav-pills nav-fill mb-4" role="tablist">
+                <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#formLogin" type="button">Iniciar sesión</button></li>
+                <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#formRegistro" type="button">Registrarse</button></li>
+            </ul>
+
+            <div class="tab-content">
+                <form id="formLogin" class="tab-pane fade show active" novalidate>
+                    <div class="form-floating mb-3">
+                        <input id="loginEmail" type="email" class="form-control" placeholder="correo" required />
+                        <label for="loginEmail">Correo electrónico</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input id="loginPassword" type="password" class="form-control" placeholder="contraseña" required />
+                        <label for="loginPassword">Contraseña</label>
+                    </div>
+                    <div id="loginError" class="alert alert-danger py-2 d-none"></div>
+                    <button class="btn btn-primary w-100 py-2" type="submit"><i class="bi bi-box-arrow-in-right me-1"></i> Entrar</button>
+                </form>
+
+                <form id="formRegistro" class="tab-pane fade" novalidate>
+                    <div class="form-floating mb-3">
+                        <input id="regEmail" type="email" class="form-control" placeholder="correo" required />
+                        <label for="regEmail">Correo electrónico</label>
+                    </div>
+                    <div class="form-floating mb-2">
+                        <input id="regPassword" type="password" class="form-control" placeholder="contraseña" required />
+                        <label for="regPassword">Contraseña</label>
+                    </div>
+                    <div class="form-text mb-3">Mínimo 6 caracteres, con mayúscula, minúscula, número y símbolo. Se le asignará el rol <b>Usuario</b>.</div>
+                    <div id="regError" class="alert alert-danger py-2 d-none"></div>
+                    <button class="btn btn-success w-100 py-2" type="submit"><i class="bi bi-person-plus me-1"></i> Crear cuenta</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================== APLICACIÓN ===================== -->
+    <div id="vistaApp" class="d-none">
+        <nav class="navbar navbar-expand-lg navbar-dark barra">
+            <div class="container-fluid px-4">
+                <span class="navbar-brand fw-semibold"><i class="bi bi-journal-richtext me-2"></i>Recetario</span>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu"><span class="navbar-toggler-icon"></span></button>
+                <div id="menu" class="collapse navbar-collapse">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item"><a class="nav-link active" href="#" data-vista="recetas"><i class="bi bi-book me-1"></i>Recetas</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#" data-vista="reportes"><i class="bi bi-bar-chart-line me-1"></i>Reportes</a></li>
+                        <li class="nav-item solo-admin"><a class="nav-link" href="#" data-vista="usuarios"><i class="bi bi-people me-1"></i>Usuarios</a></li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-3 text-white">
+                        <div class="text-end lh-sm">
+                            <div id="lblEmail" class="small fw-semibold"></div>
+                            <span id="lblRol" class="badge"></span>
+                        </div>
+                        <button id="btnSalir" class="btn btn-outline-light btn-sm"><i class="bi bi-box-arrow-right"></i> Salir</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <main class="container-fluid px-4 py-4">
+
+            <!-- ---------- RECETAS ---------- -->
+            <section id="vistaRecetas" class="vista">
+                <div class="row g-4">
+                    <div class="col-lg-4">
+                        <div class="card panel h-100">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <span class="fw-semibold"><i class="bi bi-book me-1"></i> Recetas</span>
+                                <button id="btnNuevaReceta" class="btn btn-primary btn-sm solo-admin"><i class="bi bi-plus-lg"></i> Nueva</button>
+                            </div>
+                            <div class="card-body pb-2 flex-grow-0">
+                                <div class="input-group input-group-sm mb-2">
+                                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                    <input id="txtBuscar" type="search" class="form-control" placeholder="Buscar por nombre" />
+                                </div>
+                                <select id="selTiempoMax" class="form-select form-select-sm">
+                                    <option value="">Cualquier tiempo de preparación</option>
+                                    <option value="20">Hasta 20 minutos</option>
+                                    <option value="30">Hasta 30 minutos</option>
+                                    <option value="40">Hasta 40 minutos</option>
+                                    <option value="60">Hasta 60 minutos</option>
+                                </select>
+                            </div>
+                            <div id="listaRecetas" class="list-group list-group-flush lista-recetas"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8">
+                        <div id="detalleVacio" class="card panel h-100 d-flex align-items-center justify-content-center text-muted p-5">
+                            <i class="bi bi-arrow-left-circle fs-1 mb-2"></i>
+                            Seleccione una receta para ver sus ingredientes y pasos.
+                        </div>
+
+                        <div id="detalleReceta" class="d-none">
+                            <div class="card panel mb-4">
+                                <div class="card-body d-flex justify-content-between align-items-start gap-3">
+                                    <div>
+                                        <h2 id="detNombre" class="h4 mb-1"></h2>
+                                        <p id="detDescripcion" class="text-muted mb-2"></p>
+                                        <span class="badge text-bg-light border"><i class="bi bi-clock me-1"></i><span id="detTiempo"></span> min</span>
+                                        <span class="badge text-bg-light border"><i class="bi bi-basket me-1"></i><span id="detNumIng"></span> ingredientes</span>
+                                        <span class="badge text-bg-light border"><i class="bi bi-list-ol me-1"></i><span id="detNumPasos"></span> pasos</span>
+                                    </div>
+                                    <div class="solo-admin text-nowrap">
+                                        <button id="btnEditarReceta" class="btn btn-outline-primary btn-sm"><i class="bi bi-pencil"></i> Editar</button>
+                                        <button id="btnEliminarReceta" class="btn btn-outline-danger btn-sm"><i class="bi bi-trash"></i> Eliminar</button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-4">
+                                <div class="col-xl-5">
+                                    <div class="card panel h-100">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <span class="fw-semibold"><i class="bi bi-basket me-1"></i> Ingredientes</span>
+                                            <button id="btnNuevoIngrediente" class="btn btn-primary btn-sm solo-admin"><i class="bi bi-plus-lg"></i> Agregar</button>
+                                        </div>
+                                        <div class="table-responsive">
+                                            <table class="table table-hover align-middle mb-0">
+                                                <thead><tr><th>Ingrediente</th><th class="text-end">Cantidad</th><th>Unidad</th><th class="solo-admin"></th></tr></thead>
+                                                <tbody id="tablaIngredientes"></tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-xl-7">
+                                    <div class="card panel h-100">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <span class="fw-semibold"><i class="bi bi-list-ol me-1"></i> Pasos de preparación</span>
+                                            <button id="btnNuevoPaso" class="btn btn-primary btn-sm solo-admin"><i class="bi bi-plus-lg"></i> Agregar</button>
+                                        </div>
+                                        <ul id="listaPasos" class="list-group list-group-flush"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- REPORTES (visor de SSRS) ---------- -->
+            <section id="vistaReportes" class="vista d-none">
+                <div class="card panel">
+                    <div class="card-header">
+                        <ul id="tabsReportes" class="nav nav-tabs card-header-tabs"></ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                            <p id="descReporte" class="text-muted mb-0 me-auto"></p>
+                            <div id="filtroReporte" class="d-flex align-items-center gap-2 d-none">
+                                <label for="selTiempoReporte" class="small text-nowrap">Tiempo máximo:</label>
+                                <select id="selTiempoReporte" class="form-select form-select-sm w-auto">
+                                    <option value="20">20 minutos</option>
+                                    <option value="30">30 minutos</option>
+                                    <option value="40">40 minutos</option>
+                                    <option value="60" selected>60 minutos</option>
+                                    <option value="120">120 minutos</option>
+                                </select>
+                            </div>
+                            <a id="lnkReporte" class="btn btn-outline-secondary btn-sm" target="_blank"><i class="bi bi-box-arrow-up-right"></i> Abrir en pestaña nueva</a>
+                        </div>
+                        <iframe id="visorReporte" class="visor-reporte" title="Visor de reportes SSRS"></iframe>
+                        <div class="form-text mt-2"><i class="bi bi-info-circle"></i> Reportes generados por SQL Server Reporting Services. Use la barra del visor para exportar a PDF, Excel o Word.</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ---------- USUARIOS (solo Administrador) ---------- -->
+            <section id="vistaUsuarios" class="vista d-none">
+                <div class="card panel">
+                    <div class="card-header fw-semibold"><i class="bi bi-people me-1"></i> Usuarios y roles</div>
+                    <div class="table-responsive">
+                        <table class="table align-middle mb-0">
+                            <thead><tr><th>Correo</th><th>Rol actual</th><th style="width: 260px;">Cambiar rol</th></tr></thead>
+                            <tbody id="tablaUsuarios"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ===================== MODALES ===================== -->
+    <div class="modal fade" id="modalReceta" tabindex="-1">
+        <div class="modal-dialog">
+            <form class="modal-content" id="formReceta" novalidate>
+                <div class="modal-header"><h5 class="modal-title" id="tituloModalReceta">Receta</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <input type="hidden" id="recId" />
+                    <div class="mb-3">
+                        <label class="form-label" for="recNombre">Nombre *</label>
+                        <input id="recNombre" class="form-control" required minlength="3" maxlength="100" />
+                        <div class="form-text">Entre 3 y 100 caracteres.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label" for="recDescripcion">Descripción</label>
+                        <textarea id="recDescripcion" class="form-control" rows="3" maxlength="500"></textarea>
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label" for="recTiempo">Tiempo de preparación (minutos) *</label>
+                        <input id="recTiempo" type="number" class="form-control" required min="1" max="1440" />
+                    </div>
+                    <div class="alert alert-danger py-2 mt-3 d-none errores"></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalIngrediente" tabindex="-1">
+        <div class="modal-dialog">
+            <form class="modal-content" id="formIngrediente" novalidate>
+                <div class="modal-header"><h5 class="modal-title" id="tituloModalIngrediente">Ingrediente</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <input type="hidden" id="ingId" />
+                    <div class="mb-3">
+                        <label class="form-label" for="ingNombre">Nombre *</label>
+                        <input id="ingNombre" class="form-control" required minlength="3" maxlength="50" />
+                        <div class="form-text">Entre 3 y 50 caracteres.</div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label class="form-label" for="ingCantidad">Cantidad *</label>
+                            <input id="ingCantidad" type="number" step="0.01" class="form-control" required min="0.01" />
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label" for="ingUnidad">Unidad de medida *</label>
+                            <input id="ingUnidad" class="form-control" list="unidades" required maxlength="30" />
+                            <datalist id="unidades">
+                                <option value="Gramos"></option><option value="Kilogramos"></option><option value="Mililitros"></option>
+                                <option value="Litros"></option><option value="Unidad"></option><option value="Hojas"></option>
+                                <option value="Tazas"></option><option value="Cucharadas"></option>
+                            </datalist>
+                        </div>
+                    </div>
+                    <div class="alert alert-danger py-2 mt-3 d-none errores"></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalPaso" tabindex="-1">
+        <div class="modal-dialog">
+            <form class="modal-content" id="formPaso" novalidate>
+                <div class="modal-header"><h5 class="modal-title" id="tituloModalPaso">Paso de preparación</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <div class="modal-body">
+                    <input type="hidden" id="pasoId" />
+                    <div class="mb-3">
+                        <label class="form-label" for="pasoOrden">Orden *</label>
+                        <input id="pasoOrden" type="number" class="form-control" required min="1" max="100" />
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label" for="pasoDescripcion">Descripción *</label>
+                        <textarea id="pasoDescripcion" class="form-control" rows="3" required minlength="10" maxlength="500"></textarea>
+                        <div class="form-text">Mínimo 10 caracteres.</div>
+                    </div>
+                    <div class="alert alert-danger py-2 mt-3 d-none errores"></div>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button><button type="submit" class="btn btn-primary">Guardar</button></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalConfirmar" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-sm">
+            <div class="modal-content">
+                <div class="modal-body text-center p-4">
+                    <i class="bi bi-exclamation-triangle text-danger fs-1"></i>
+                    <p id="textoConfirmar" class="mt-2 mb-0"></p>
+                </div>
+                <div class="modal-footer justify-content-center"><button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button><button id="btnConfirmar" type="button" class="btn btn-danger">Eliminar</button></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3"><div id="toast" class="toast align-items-center border-0" role="alert"><div class="d-flex"><div id="toastTexto" class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div></div></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2016/01/reportdefinition" xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+  <AutoRefresh>0</AutoRefresh>
+  <DataSources>
+    <DataSource Name="RecetasDB">
+      <ConnectionProperties>
+        <DataProvider>SQL</DataProvider>
+        <ConnectString>Data Source=localhost;Initial Catalog=RecetasDB;TrustServerCertificate=True</ConnectString>
+        <IntegratedSecurity>true</IntegratedSecurity>
+      </ConnectionProperties>
+      <rd:SecurityType>Integrated</rd:SecurityType>
+      <rd:DataSourceID>97dc2e0c-b648-4e95-b255-ecffba0d4d09</rd:DataSourceID>
+    </DataSource>
+  </DataSources>
+  <DataSets>
+    <DataSet Name="DatosPasos">
+      <Query>
+        <DataSourceName>RecetasDB</DataSourceName>
+        
+        <CommandText>SELECT r.Nombre AS Receta,
+       COUNT(p.Id) OVER (PARTITION BY r.Id) AS TotalPasos,
+       p.Orden,
+       p.Descripcion AS Paso
+FROM Recetas r
+LEFT JOIN PasosPreparacion p ON p.RecetaId = r.Id
+ORDER BY r.Nombre, p.Orden</CommandText>
+      </Query>
+      <Fields><Field Name="Receta"><DataField>Receta</DataField><rd:TypeName>System.String</rd:TypeName></Field><Field Name="TotalPasos"><DataField>TotalPasos</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="Orden"><DataField>Orden</DataField><rd:TypeName>System.Int32</rd:TypeName></Field><Field Name="Paso"><DataField>Paso</DataField><rd:TypeName>System.String</rd:TypeName></Field></Fields>
+    </DataSet>
+  </DataSets>
+  <ReportSections>
+    <ReportSection>
+      <Body>
+        <ReportItems>
+          <Textbox Name="Titulo">
+  <CanGrow>true</CanGrow>
+  <KeepTogether>true</KeepTogether>
+  <Paragraphs>
+    <Paragraph>
+      <TextRuns>
+        <TextRun>
+          <Value>Pasos de preparación por receta</Value>
+          <Style><FontFamily>Segoe UI</FontFamily><FontSize>16pt</FontSize><FontWeight>Bold</FontWeight><Color>#1F4E79</Color></Style>
+        </TextRun>
+      </TextRuns>
+      <Style><TextAlign>Left</TextAlign></Style>
+    </Paragraph>
+  </Paragraphs>
+  <Top>0in</Top><Left>0in</Left><Height>0.4in</Height><Width>7in</Width>
+  <Style><Border><Style>None</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+</Textbox>
+          <Textbox Name="Subtitulo">
+  <CanGrow>true</CanGrow>
+  <KeepTogether>true</KeepTogether>
+  <Paragraphs>
+    <Paragraph>
+      <TextRuns>
+        <TextRun>
+          <Value>="Cantidad de pasos de cada receta y el orden en que deben realizarse  ·  Total de recetas: " &amp; CountDistinct(Fields!Receta.Value, "DatosPasos")</Value>
+          <Style><FontFamily>Segoe UI</FontFamily><FontSize>9pt</FontSize><Color>#555555</Color></Style>
+        </TextRun>
+      </TextRuns>
+      <Style><TextAlign>Left</TextAlign></Style>
+    </Paragraph>
+  </Paragraphs>
+  <Top>0.4in</Top><Left>0in</Left><Height>0.3in</Height><Width>7in</Width>
+  <Style><Border><Style>None</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+</Textbox>
+          <Tablix Name="TablaPasos">
+  <TablixBody>
+    <TablixColumns><TablixColumn><Width>0.8in</Width></TablixColumn><TablixColumn><Width>4.7in</Width></TablixColumn><TablixColumn><Width>1.5in</Width></TablixColumn></TablixColumns>
+    <TablixRows><TablixRow><Height>0.3in</Height><TablixCells><TablixCell><CellContents><Textbox Name="hOrden">
+  <CanGrow>true</CanGrow>
+  <KeepTogether>true</KeepTogether>
+  <Paragraphs>
+    <Paragraph>
+      <TextRuns>
+        <TextRun>
+          <Value>Orden</Value>
+          <Style><FontFamily>Segoe UI</FontFamily><FontSize>10pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style>
+        </TextRun>
+      </TextRuns>
+      <Style><TextAlign>Center</TextAlign></Style>
+    </Paragraph>
+  </Paragraphs>
+  
+  <Style><Border><Color>#B8C7D6</Color><Style>Solid</Style><Width>0.5pt</Width></Border><BackgroundColor>#1F4E79</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+</Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="hPaso">
+  <CanGrow>true</CanGrow>
+  <KeepTogether>true</KeepTogether>
+  <Paragraphs>
+    <Paragraph>
+      <TextRuns>
+        <TextRun>
+          <Value>Descripción del paso</Value>
+          <Style><FontFamily>Segoe UI</FontFamily><FontSize>10pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style>
+        </TextRun>
+      </TextRuns>
+      <Style><TextAlign>Left</TextAlign></Style>
+    </Paragraph>
+  </Paragraphs>
+  
+  <Style><Border><Color>#B8C7D6</Color><Style>Solid</Style><Width>0.5pt</Width></Border><BackgroundColor>#1F4E79</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+</Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="hEstado">
+  <CanGrow>true</CanGrow>
+  <KeepTogether>true</KeepTogether>
+  <Paragraphs>
+    <Paragraph>
+      <TextRuns>
+        <TextRun>
+          <Value>Estado</Value>
+          <Style><FontFamily>Segoe UI</FontFamily><FontSize>10pt</FontSize><FontWeight>Bold</FontWeight><Color>#FFFFFF</Color></Style>
+        </TextRun>
+      </TextRuns>
+      <Style><TextAlign>Center</TextAlign></Style>
+    </Paragraph>
+  </Paragraphs>
+  
+  <Style><Border><Color>#B8C7D6</Color><Style>Solid</Style><Width>0.5pt</Width></Border><BackgroundColor>#1F4E79</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+</Textbox></CellContents></TablixCell></TablixCells></TablixRow><TablixRow><Height>0.32in</Height><TablixCells><TablixCell><CellContents><Textbox Name="gReceta">
+  <CanGrow>true</CanGrow>
+  <KeepTogether>true</KeepTogether>
+  <Paragraphs>
+    <Paragraph>
+      <TextRuns>
+        <TextRun>
+          <Value>=Fields!Receta.Value &amp; "   ·   " &amp; Fields!TotalPasos.Value &amp; " paso(s) de preparación"</Value>
+          <Style><FontFamily>Segoe UI</FontFamily><FontSize>10pt</FontSize><FontWeight>Bold</FontWeight><Color>#1F4E79</Color></Style>
+        </TextRun>
+      </TextRuns>
+      <Style><TextAlign>Left</TextAlign></Style>
+    </Paragraph>
+  </Paragraphs>
+  
+  <Style><Border><Color>#B8C7D6</Color><Style>Solid</Style><Width>0.5pt</Width></Border><BackgroundColor>#DCE9F5</BackgroundColor><VerticalAlign>Middle</VerticalAlign><PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+</Textbox><ColSpan>3</ColSpan></CellContents></TablixCell><TablixCell /><TablixCell /></TablixCells></TablixRow><TablixRow><Height>0.27in</Height><TablixCells><TablixCell><CellContents><Textbox Name="Orden">
+  <CanGrow>true</CanGrow>
+  <KeepTogether>true</KeepTogether>
+  <Paragraphs>
+    <Paragraph>
+      <TextRuns>
+        <TextRun>
+          <Value>=Fields!Orden.Value</Value>
+          <Style><FontFamily>Segoe UI</FontFamily><FontSize>10pt</FontSize><Color>#222222</Color></Style>
+        </TextRun>
+      </TextRuns>
+      <Style><TextAlign>Center</TextAlign></Style>
+    </Paragraph>
+  </Paragraphs>
+  
+  <Style><Border><Color>#B8C7D6</Color><Style>Solid</Style><Width>0.5pt</Width></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+</Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Paso">
+  <CanGrow>true</CanGrow>
+  <KeepTogether>true</KeepTogether>
+  <Paragraphs>
+    <Paragraph>
+      <TextRuns>
+        <TextRun>
+          <Value>=IIf(IsNothing(Fields!Paso.Value), "(sin pasos registrados)", Fields!Paso.Value)</Value>
+          <Style><FontFamily>Segoe UI</FontFamily><FontSize>10pt</FontSize><Color>#222222</Color></Style>
+        </TextRun>
+      </TextRuns>
+      <Style><TextAlign>Left</TextAlign></Style>
+    </Paragraph>
+  </Paragraphs>
+  
+  <Style><Border><Color>#B8C7D6</Color><Style>Solid</Style><Width>0.5pt</Width></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+</Textbox></CellContents></TablixCell><TablixCell><CellContents><Textbox Name="Estado">
+  <CanGrow>true</CanGrow>
+  <KeepTogether>true</KeepTogether>
+  <Paragraphs>
+    <Paragraph>
+      <TextRuns>
+        <TextRun>
+          <Value>=IIf(IsNothing(Fields!Orden.Value), "", "Paso " &amp; Fields!Orden.Value &amp; " de " &amp; Fields!TotalPasos.Value)</Value>
+          <Style><FontFamily>Segoe UI</FontFamily><FontSize>10pt</FontSize><Color>#222222</Color></Style>
+        </TextRun>
+      </TextRuns>
+      <Style><TextAlign>Center</TextAlign></Style>
+    </Paragraph>
+  </Paragraphs>
+  
+  <Style><Border><Color>#B8C7D6</Color><Style>Solid</Style><Width>0.5pt</Width></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+</Textbox></CellContents></TablixCell></TablixCells></TablixRow></TablixRows>
+  </TablixBody>
+  <TablixColumnHierarchy><TablixMembers><TablixMember /><TablixMember /><TablixMember /></TablixMembers></TablixColumnHierarchy>
+  <TablixRowHierarchy>
+    <TablixMembers>
+      <TablixMember><KeepWithGroup>After</KeepWithGroup><RepeatOnNewPage>true</RepeatOnNewPage></TablixMember>
+      <TablixMember>
+        <Group Name="grpReceta"><GroupExpressions><GroupExpression>=Fields!Receta.Value</GroupExpression></GroupExpressions></Group>
+        <SortExpressions><SortExpression><Value>=Fields!Receta.Value</Value></SortExpression></SortExpressions>
+        <TablixMembers>
+          <TablixMember><KeepWithGroup>After</KeepWithGroup></TablixMember>
+          <TablixMember>
+            <Group Name="Detalles" />
+            <SortExpressions><SortExpression><Value>=Fields!Orden.Value</Value></SortExpression></SortExpressions>
+          </TablixMember>
+        </TablixMembers>
+      </TablixMember>
+    </TablixMembers>
+  </TablixRowHierarchy>
+  <NoRowsMessage>No hay recetas registradas.</NoRowsMessage>
+  <DataSetName>DatosPasos</DataSetName>
+  <Top>0.85in</Top>
+  <Left>0in</Left>
+  <Height>0.9in</Height>
+  <Width>7.0in</Width>
+  <Style><Border><Style>None</Style></Border></Style>
+</Tablix>
+        </ReportItems>
+        <Height>2.5in</Height>
+        <Style />
+      </Body>
+      <Width>7in</Width>
+      <Page>
+        <PageFooter>
+          <Height>0.35in</Height>
+          <PrintOnFirstPage>true</PrintOnFirstPage>
+          <PrintOnLastPage>true</PrintOnLastPage>
+          <ReportItems>
+            <Textbox Name="Pagina">
+  <CanGrow>true</CanGrow>
+  <KeepTogether>true</KeepTogether>
+  <Paragraphs>
+    <Paragraph>
+      <TextRuns>
+        <TextRun>
+          <Value>="Página " &amp; Globals!PageNumber &amp; " de " &amp; Globals!TotalPages</Value>
+          <Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize><Color>#777777</Color></Style>
+        </TextRun>
+      </TextRuns>
+      <Style><TextAlign>Left</TextAlign></Style>
+    </Paragraph>
+  </Paragraphs>
+  
+  <Top>0.05in</Top><Left>0in</Left><Height>0.25in</Height><Width>2in</Width><Style><Border><Style>None</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+</Textbox>
+            <Textbox Name="Generado">
+  <CanGrow>true</CanGrow>
+  <KeepTogether>true</KeepTogether>
+  <Paragraphs>
+    <Paragraph>
+      <TextRuns>
+        <TextRun>
+          <Value>="Generado el " &amp; Format(Globals!ExecutionTime, "dd/MM/yyyy HH:mm")</Value>
+          <Style><FontFamily>Segoe UI</FontFamily><FontSize>8pt</FontSize><Color>#777777</Color></Style>
+        </TextRun>
+      </TextRuns>
+      <Style><TextAlign>Right</TextAlign></Style>
+    </Paragraph>
+  </Paragraphs>
+  
+  <Top>0.05in</Top><Left>3.5in</Left><Height>0.25in</Height><Width>3in</Width><Style><Border><Style>None</Style></Border><VerticalAlign>Middle</VerticalAlign><PaddingLeft>4pt</PaddingLeft><PaddingRight>4pt</PaddingRight><PaddingTop>2pt</PaddingTop><PaddingBottom>2pt</PaddingBottom></Style>
+</Textbox>
+          </ReportItems>
+          <Style />
+        </PageFooter>
+        <PageHeight>11in</PageHeight>
+        <PageWidth>8.5in</PageWidth>
+        <LeftMargin>0.75in</LeftMargin>
+        <RightMargin>0.75in</RightMargin>
+        <TopMargin>0.6in</TopMargin>
+        <BottomMargin>0.6in</BottomMargin>
+        <Style />
+      </Page>
+    </ReportSection>
+  </ReportSections>
+  
+  <Language>es-ES</Language>
+  <ConsumeContainerWhitespace>true</ConsumeContainerWhitespace>
+  <rd:ReportUnitType>Inch</rd:ReportUnitType>
+  <rd:ReportID>71b94e5d-3a0c-45cd-9ec3-bd9c3763f231</rd:ReportID>
+</Report>
